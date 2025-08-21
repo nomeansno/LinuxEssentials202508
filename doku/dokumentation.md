@@ -251,6 +251,33 @@ Definierte Aliase können mit dem Kommando `unalias` wieder gelöscht werden.
 
 Die Opione `-a` löscht alle Aliase (`unalias -a`).
 
+## Escaping / Maskieren von Sonderzeichen
+Bestimmte Zeichen haben eine Sonderbedeutung für die BASH. Das wohl wichtigste Sonderzeichen ist das *Leerzeichen*: 
+
+> Das Leerzeichen ist ein Sonderzeichen. Das Leerzeichen ist das **Trennzeichen**. Das Trennzeichen ist elementar wichtig für die Shell, um z.B. ein Kommando von seinen Optionen und Argumenten unterscheiden zu können.
+
+
+Weitere Sonderzeichen sind:
+```bash
+*       # Asterisk
+?       
+#       # Kommentarzeichen
+$       # Subsitution
+!       # History Expansion
+\       # Backslash
+'
+''
+```
+Sonderzeichen können durch das sogenannte *Escaping* oder *Maskieren* bzw. *Quoting* ihrer Sonderbedeutung entledigt werden, so dass sie von der Shell wie reguläre Satzzeichen und nicht wie Sonderzeichen behandelt werden.
+
+Zum Maskieren gibt es drei verschiedene Wege:
+
+1. Maskieren mit dem Backslash `\`: Der Backslash maskiert (nur) das **direkt darauffolgende** Zeichen
+
+2. Maskieren mit einfachen Hochkommata `'`: Einfache Hochkommata maskieren **jedes** in ihnen eingeschlossene Zeichen.
+
+3. Maskieren mit doppelten Hochkommata `"`: Doppelte Hochkommata maskieren **fast** alle in ihnen eingeschlossene Zeichen, nicht aber das Dollarzeichen `$`, Backticks `\`` für die Kommandosubstitution und der Backslash `/` vor bestimmten Zeichen.
+
 
 
 
