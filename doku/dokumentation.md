@@ -240,7 +240,7 @@ Wenn wir Aliase einfach so auf der Kommandozeile definieren, sind diese nur in d
 
 Dieses Konzept gilt nicht nur für Aliase, sondern generell für die Konfiguration unseres Systems.
 
-Aliase werden z.B. direkt in der Datei `~/.bashrc` oder besser noch in der Datei `~/.bash_aliase` definiert (wenn wir als Shell die BASH verwenden).
+Aliase werden z.B. direkt in der Datei `~/.bashrc` oder besser noch in der Datei `~/.bash_aliases` definiert (wenn wir als Shell die BASH verwenden).
 
 #### Löschen von Aliasen
 ```
