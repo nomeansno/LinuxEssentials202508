@@ -2,11 +2,17 @@
 
 ## Unterschied Terminal / Shell
 
-Heutzutage spricht man von einem Terminal als ein Programm, in dem eine Shell läuft. Mithilfe einer Shell können wir Kommandos absetzen. Eine Shell folgt einer gewissen Syntax bzw. Skripsprache. 
+Ein Terminal ist heutzutage ein Programm (früher ein physisches Gerät), das die Ein- und Ausgabe für eine Shell bereitstellt. Das Terminal zeigt an, was die Shell ausgibt und nimmt Tastatureingaben entgegen. Es ist eine Art _Benutzeroberfläche_ durch die wir mit einer Shell interagieren können.
 
-Es gibt verschiedene Shells: Shells die als Vermittler zwischen Benutzer und Betriebssytem fungieren, andere Shells können genutzt werden, um einzelne Befehle einer Programmiersprache abzusetzen, z.B. die Python Shell. In einer MySQL Shell können Datenbanken erstellt und verwaltet werden etc.
+Die Shell ist ein _Kommando-Interpreter_. Sie nimmt Kommandos entgegen und interpretiert diese.
 
-Unter Linux nutzen wir in der Regel die BASH als Shell. Auch hier gibt es einige SH kompatible Varianten wie die ZSH, KSH, Fish-Shell etc.
+In Linux dient die Shell unter anderem dazu, als Vermittler zwischen Benutzer und Betriebssytem zu fungieren. Shells werden generell genutzt, um einzelne Befehle (z.B. einer Skriptsprache) zu interpretieren und auszuführen. 
+
+
+Die Python Shell kann z.B. Python Kommandos ausführen, in einer MySQL Shell können Datenbanken erstellt und verwaltet werden usw.
+
+
+Unter Linux nutzen wir in der Regel die _BASH_ (_Bourne Again Shell_) als Shell. Auch hier gibt es einige `sh` kompatible Varianten wie die _ZSH_, _KSH_, _Fish-Shell_ etc.
 
 ## Kommandos
 
@@ -37,17 +43,22 @@ ls -la /etc /home   # Übergabe mehrerer Optionen und Argumente
 
 ### Grundlegende Kommandos
 
-- `mkdir`
-- `cd`
-- `ls`
-- `touch`
-- `cp`
-- `mv`
-- `rm`
-- `alias`
-- `rmdir`
-
-- ``
+- `whoami` gibt den aktuellen Benutzer aus
+- `pwd` gibt das aktuelle Verzeichnis aus
+- `ls` zeigt den Inhalt von Verzeichnissen an
+- einige Optionen von `ls`:
+  - `ls -a` ignoriert keine Einträge, die mit einem Punkt beginnen -> zeigt auch "versteckte" Dateien an
+  - `ls -l` zeigt ausführliche Details zu den Dateien an
+- `cat` gibt den Inhalt einer Datei auf der Kommandozeile aus
+- `less` ist ein sogenannter *Pager*: gibt den Inhalt einer Datei aus, mit der Möglichkeit zu scrollen, zu suchen etc. (Benutzung siehe Manpages)
+- `history` zeigt alle bisher eingegebenen Kommandos inkl. eines Indexes an (s.u.)
+- `su` *Substitue User* -> Benutzer wechseln
+  - `su -l root` eine Shell mit Root-Rechten öffnen
+- `exit` beendet die aktuell laufende Shell 
+- `clear` *leert* die Seite, so dass unser *Prompt* sich ganz oben befindet, wir können aber auch die Tastenkombination `STRG+L` verwenden
+- `touch` erstellt eine leere Datei
+- `mkdir` erstellt ein Verzeichnis
+- `echo` gibt alle übergebenen Argumente aus (Äquivalent zu `print()` in `python`
 
 ### Shell-Builtins
 In die Shell (in unserem Fall BASH) eingebaute Kommandos. Sie sind essenziell bzw. wichtig, damit die Shell an sich funktioniert, z.B. das Kommando `cd`. 
