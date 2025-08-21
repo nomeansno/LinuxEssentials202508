@@ -152,5 +152,111 @@ rm -r <pfad-zum-verzeichniss>
 
 **Leere** Verzeichnisse können zusätzlich mit dem Kommando `rmdir` gelöscht werden.
 
+### Dateien und Verzeichnisse verschieben / umbenennen
+
+Dateien und Verzeichnisse können mit dem Kommando `mv` (*move*) verschoben und umbenannt werden.
+
+Beim Verschieben von Verzeichnissen dürfen wir die Option `-r` *nicht* angeben. Der Grund dafür ist, dass beim Verschieben nicht wie vielleicht angenommen eine Art *ausschneiden* und *einfügen* stattfindet, sondern wie beim Löschen lediglich der Dateiname ersetzt wird. 
+
+Es muss also keine rekursive Operation auf dem Speichermedium stattfinden. Das ist auf unten stehendender Illustration vielleicht besser zu erkennen.
+```bash
+mv <quelle> <ziel>
+mv <quellverzeichnis> <zielverzeichnis>
+mv <alter-name> <neuer-name>
+```
+### Illustration kopieren, löschen, verschieben
+
+![illustration-cp-rm-mv](./images/cp-mv-rm.png)
+
+### relative und absolute Pfadangaben
+
+Immer wenn wir eine Dateioperation durchführen, müssen wir den Pfad (eine Art *Wegbeschreibung*) zu der jeweiligen Datei angeben. Diese Angabe können wir auf zwei unterschiedliche Arten und Weisen machen: *relativ* oder *absolut*.
+
+#### absolute Pfadangaben
+
+Eine *absolute Pfadangabe* beschreibt den Weg ausgehend von der Wurzel `/` (bzw. `\` bzw. z.B. `C:` in Windows) des Dateisystembaums.
+```bash
+cp /home/tux/somefile /home/tux/Somedir
+```
+Absolute Pfadangaben können wir immer daran erkennen, dass das erste Zeichen des Pfades ein Slash `/` ist.
+
+Einzige Ausnahme ist die Tilde `~`, welche den absoluten Pfad zum Heimatverzeichnis des aufrufenden Benutzers symbolisiert. Folgende Pfadangaben sind identisch:
+```bash
+cd ~/Somedir
+cd /home/tux/Somedir
+```
+
+#### relative Pfadangaben
+
+Eine *relative Pfadangabe* beschreibt den Weg ausgehend vom **aktuellen Standort** (aktuelles Verzeichnis) im Dateisystem.
+```bash
+cp somefile Somedir/
+```
+##### spezielle Verzeichniseinträge (Special Directory Entries) . und ..
+
+- Sie gehören zur Kategorie der relativen Pfadangaben (Relative Pathnames)
+- Sie werden auch als *Pseudodirektoren* (Pseudo-Directories) bezeichnet
+- Manchmal nennt man sie auch *Implizite Links* oder *Selbstreferenzierende Einträge*
+- Formal sind sie aber einfach reguläre Einträge im Dateisystem, die bei jedem Verzeichnis automatisch vorhanden sind.
+
+- `.` (Punkt) symbolisiert das aktuelle Verzeichnis
+- `..` (doppelter Punkt) symbolisiert das übergeordnete Verzeichnis (Parent Directory)
+
+### Pattern Matching
+
+Ein *Pattern* ist ein *Muster*, bzw. ein *Platzhalter* oder *Wildcard* welches auf eine Zeichenfolge passt, so dass wir damit z.B. nach Dateien bzw. Pfadangaben suchen können (mit entsprechenden Kommandos).
+
+Wir können in einem *Pattern* bestimmte Sonderzeichen verwenden, um dieses allgemeingültiger zu machen:
+
+*Globbing Characters:*
+
+- `*` (*Asterisk*) -> Steht für beliebige Zeichen, welche beliebig oft vorkommen können (auch keinmal)
+- `?` -> Steht für jedes beliebige Zeichen, welches **exakt** einmal vorkommt
+
+Weitere Möglichkeiten für Pattern Matching:
+
+- `!(pattern)` Exkludiert das angegebene Pattern (in dem Pattern dürfen auch wieder die oben angegebenen *Globbing Characters* vorkommen
+
+Beispiele:
+```bash
+rm *.jpg       # löscht alle Dateien mit der Endung .jpg
+ls datei?.txt  # zeigt nur Dateien an, bei denen nach der Zeichenfolge datei noch ein weiteres beliebiges Zeichen folgt und die die Endung .txt haben
+mv !(o*) ../somdir/    # verschiebt alle Dateien des aktuellen Verzeichnisses nach ../somedir, ausser Dateien, die mit einem o beginnen
+```
+## Aliase
+
+Aliase sind selbstdefinierte Abkürzungen für Kommandos mit Optionen. Wir verwenden Aliase z.B. für häufig verwendete Kommandos mit Optionen oder auch Argumenten wie Pfadangaben.
+
+Das Kommando `alias` an sich zeigt alle in der aktullen Shell gültigen Aliase an.
+
+### Definition von Aliasen
+```bash
+alias <name-des-aliases>='<kommando> -<option> <argument>'
+alias la='ls -a'
+alias rm='rm -i'
+alias somedir='cd ~/path/to/specific/dir/'
+```
+Wenn wir Aliase einfach so auf der Kommandozeile definieren, sind diese nur in der aktullen Shell gültig. Wollen wir Aliase persistent definieren (für alle neu geöffneten Shells bzw. auch nach einem Reboot), so müssen wir die Definition in dafür vorgesehene Dateien eintragen.
+
+Dieses Konzept gilt nicht nur für Aliase, sondern generell für die Konfiguration unseres Systems.
+
+Aliase werden z.B. direkt in der Datei `~/.bashrc` oder besser noch in der Datei `~/.bash_aliase` definiert (wenn wir als Shell die BASH verwenden).
+
+#### Löschen von Aliasen
+```
+unalias <name-des-aliases>
+unalias lsa
+```
+Definierte Aliase können mit dem Kommando `unalias` wieder gelöscht werden.
+
+Die Opione `-a` löscht alle Aliase (`unalias -a`).
+
+
+
+
+
+
+
+
 
 
