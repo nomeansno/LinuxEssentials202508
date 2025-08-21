@@ -10,7 +10,30 @@ Unter Linux nutzen wir in der Regel die BASH als Shell. Auch hier gibt es einige
 
 ## Kommandos
 
+### Aufbau von Kommandos:
+```
+<kommando> [-<kurzoption>]... [<argument>]...
+<kommando> [--<langoption>]... [<argument>]...
+```
+Erklärung zur obigen Syntax (angelehnt an Manpages):
 
+- `[  ]` was in eckigen Klammern steht, ist **optional** -> wir können also Optionen oder Argumente übergeben, **müssen** es aber nicht
+- `...` die drei Punkte bedeuten, dass auch mehrere Optionen oder Argumente übergeben werden können
+
+>[!NOTE]
+> Es macht fast immer keinen Unterschied, ob wir die Option(en) vor oder nach den Argumenten schreiben:
+> ```bash
+> rm -r somedir
+> rm somedir -r
+>```
+
+#### Beispiele
+```
+ls -l               # Übergabe der Option -l
+ls /etc             # Übergabe des Arguments /etc
+ls -la              # Übergabe mehrerer Optionen
+ls -la /etc /home   # Übergabe mehrerer Optionen und Argumente
+```
 
 ### Grundlegende Kommandos
 
@@ -34,3 +57,29 @@ Builtins haben keine eigene Manpage, ihre Funktionsweise ist in der Manpage der 
 ### Extern realisierte Kommandos
 Die meisten Kommandos sind _extern realisiert_, d.h. sie sind nicht in die BASH eingebaut. So gut wie alle _extern realisierten_ Kommandos haben eine Manpage (`man <kommando>`) in welcher die Art wie das Kommando zu benutzen ist und sämtliche Optionen mit Erklärungen angegeben sind.
 
+## Hilfe auf der Kommandozeile
+
+### Manpages
+
+*Manual Pages*: eine Art Handbuch zu einzelnen Kommandos, mit Erklärungen zur Syntax, allen Optionen, teilweise Beispielen etc.
+
+- `man <kommando>` 
+- z.B. `man ls` Handbuchseite zum Kommando `ls`
+- Suche in den Manpages: Eingabe von `/` gefolgt vom Suchbegriff, z.B. `/-l` sucht nach der Option `-l`
+- zum nächsten Suchbegriff mit `n`
+- zum vorherigen Suchbegriff mit `N`
+- Manpage schliessen mit `q`
+- zum Anfang der Manpage springen mit `g`
+- ans Ende mit `G`
+
+### Help
+
+*Kurzhilfe* zu einem Kommando durch Übergabe der Option `--help` -> `ls --help`
+
+## History
+
+Eine Liste aller bisher eingegebenen Kommandos
+
+- Blättern durch die History mit den Pfeiltasten oder `STRG+P` bzw. `STRG+N`
+* gezielt ein bestimmtes Kommando aufrufen:
+- nach Eingabe von `history` Aufruf von `!<index>` -> `<index>` ist der Index des Kommandos
