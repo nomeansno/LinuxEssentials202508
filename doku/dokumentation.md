@@ -4,13 +4,11 @@
 
 Ein Terminal ist heutzutage ein Programm (früher ein physisches Gerät), das die Ein- und Ausgabe für eine Shell bereitstellt. Das Terminal zeigt an, was die Shell ausgibt und nimmt Tastatureingaben entgegen. Es ist eine Art _Benutzeroberfläche_ durch die wir mit einer Shell interagieren können.
 
-Die Shell ist ein _Kommando-Interpreter_. Sie nimmt Kommandos entgegen und interpretiert diese.
+Eine Shell ist ein _Kommando-Interpreter_. Sie nimmt Kommandos entgegen und interpretiert diese.
 
 In Linux dient die Shell unter anderem dazu, als Vermittler zwischen Benutzer und Betriebssytem zu fungieren. Shells werden generell genutzt, um einzelne Befehle (z.B. einer Skriptsprache) zu interpretieren und auszuführen. 
 
-
 Die Python Shell kann z.B. Python Kommandos ausführen, in einer MySQL Shell können Datenbanken erstellt und verwaltet werden usw.
-
 
 Unter Linux nutzen wir in der Regel die _BASH_ (_Bourne Again Shell_) als Shell. Auch hier gibt es einige `sh` kompatible Varianten wie die _ZSH_, _KSH_, _Fish-Shell_ etc.
 
@@ -262,6 +260,15 @@ Definierte Aliase können mit dem Kommando `unalias` wieder gelöscht werden.
 
 Die Opione `-a` löscht alle Aliase (`unalias -a`).
 
+#### Alias für einen Papierkorb
+
+
+
+
+
+
+
+
 ## Escaping / Maskieren von Sonderzeichen
 Bestimmte Zeichen haben eine Sonderbedeutung für die BASH. Das wohl wichtigste Sonderzeichen ist das *Leerzeichen*: 
 
@@ -287,7 +294,25 @@ Zum Maskieren gibt es drei verschiedene Wege:
 
 2. Maskieren mit einfachen Hochkommata `'`: Einfache Hochkommata maskieren **jedes** in ihnen eingeschlossene Zeichen.
 
-3. Maskieren mit doppelten Hochkommata `"`: Doppelte Hochkommata maskieren **fast** alle in ihnen eingeschlossene Zeichen, nicht aber das Dollarzeichen `$`, Backticks `\`` für die Kommandosubstitution und der Backslash `/` vor bestimmten Zeichen.
+3. Maskieren mit doppelten Hochkommata `"`: Doppelte Hochkommata maskieren **fast** alle in ihnen eingeschlossene Zeichen, nicht aber
+
+- `$` (Dollar) - Variablensubstitution funktioniert weiterhin
+- ``` (Backticks) - Kommandosubstitution funktioniert weiterhin
+- `\` (Backslash) - behält seine Escape-Funktion
+- `!` (Ausrufezeichen) - History Expansion in bash (je nach Einstellung)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
