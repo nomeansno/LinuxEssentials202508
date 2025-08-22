@@ -301,6 +301,118 @@ Zum Maskieren gibt es drei verschiedene Wege:
 - `\` (Backslash) - behält seine Escape-Funktion
 - `!` (Ausrufezeichen) - History Expansion in bash (je nach Einstellung)
 
+## Subshells
+
+Innerhalb einer laufenden Shell können weitere Shells gestartet werden. Dies sind sogenannte *Subshells* oder *Kindshells*. Diese können entweder aktiv, z.B. durch die Eingabe des Kommandos `bash` gestartet werden. 
+
+Subshells sind separate Instanzen der Shell, die von der Hauptshell gestartet werden. Sie sind ein fundamentales Konzept in Linux/Unix-Systemen.
+
+Subshells werden aber auch oft gestartet, ohne dass wir dies merken.
+
+Z.B. werden Kommandos, Funktionen, Skripte in Subshells ausgeführt, auch wenn wir davon direkt gar nichts mitbekommen. Auch Pipes und runde Klammern `()` erzeugen Subshells. 
+
+Es ist wichtig zu wissen, dass z.B. Aliase und Variablen **nicht** automatisch in Subshells vererbt werden!
+
+Auch beim Wechsel in einen anderen Benutzeraccount wird eine Subshell mit den Berechtigungen dieses Benutzers gestartet.
+
+Wir können uns einen Überblick über die momentan laufenden Shells bzw. Subshells mit dem Kommando `ps` verschaffen, oder in der BASH über die Variable `BASH_SUBSHELL`
+```
+echo $BASH_SUBSHELL   # zeigt 0 in Hauptshell, >0 in Subshells
+(echo $BASH_SUBSHELL) # zeigt 1
+((echo $BASH_SUBSHELL)) # zeigt 2
+```
+##### Eigenschaften von Subshells
+**Vererbung**:
+
+- **Umgebungs**variablen werden vererbt (als **Kopie**)
+- Funktionen werden vererbt
+- Arbeitsverzeichnis wird vererbt
+
+**Isolation**:
+
+- Änderungen in der Subshell beeinflussen die Parent-Shell **nicht**
+- (neue) Shellvariablen werden nicht vererbt/sind nicht sichtbar
+- `cd` in einer Subshell ändert nicht das Verzeichnis der Parent-Shell
+
+##### Praktische Beispiele
+###### Variablen-Isolation
+```
+var="parent"
+(var="child"; echo "In Subshell: $var")
+echo "In Parent-Shell: $var"
+# Ausgabe: "child" dann "parent"
+```
+###### ArbeitsverzeichnisIsolation
+```
+pwd                   # z.B. /home/tux
+(cd /tmp; pwd)        # zeigt /tmp
+pwd                   # zeigt wieder /home/tux
+```
+###### Typisches Problem mit Pipes
+```
+count=0
+echo -e "1\n2\n3" | while read line; do
+    ((count++))       # läuft in Subshell!
+done
+echo "Count: $count"  # zeigt 0, nicht 3!
+
+# Lösung:
+count=0
+while read line; do
+    ((count++))
+done < <(echo -e "1\n2\n3")
+echo "Count: $count"  # zeigt 3
+```
+## Variablen
+
+### Umgebungsvariablen / Environment Variables
+
+Sind systemweit gültig, enthalten wichtige Informationen, damit unser System wie gewünscht funktioniert, bestimmte Kommandos greifen auf diese Variablen zurück. Umgebungsvariablen werden nach Konvention komplett in Grossbuchstaben geschrieben.
+
+Einige Beispiele:
+```bash
+$HOME       # Heimatverzeichnis des aktuellen Benutzers
+$PWD        # absoluter Pfad des aktuellen Verzeichnisses
+$USER       # Login Name des aktuellen Benutzers
+$SHELL      # Shell des aktuellen Benutzers
+$PATH       # Liste der Verzeichnisse, die nach ausführbaren Dateien durchsucht werden, so dass wir diese ohne eine Pfadangabe aufrufen können
+```
+Systemvariablen können unterschiedliche Werte enthalten, je nachdem welcher Benutzer angemeldet ist. 
+
+### Shellvariablen / Shell Variables
+
+Sind nur gültig in der aktuellen Shell, können vom Benutzer selbst definiert werden. Werden **nicht** automatisch in Subshells vererbt, es sei denn sie werden mit dem Kommando `export` exportiert.
+```bash
+foo=bar         # weist der Variablen foo den Wert bar zu
+export foo      # macht die Variable foo auch in Subshells gültig
+export hallo=huhu # weist der Variablen hallo den Wert huhu zu und macht diese in Subshells gültig
+```
+### Variablensubstitution
+
+Bei der Variablensubstitution wird der Name der Variablen mit dem in ihr hinterlegten Wert ersetzt.
+
+```bash
+echo $foo       # gibt den Wert der Variablen foo aus
+echo ${foo}     # gibt den Wert der Variablen foo aus
+```
+
+### Kommandosubstitution
+
+Durch die *Kommandosubstitution* können wir Variablen die Ausgabe eines Kommandos zuweisen. Genauer gesagt wird eine *Subshell* gestartet, in welcher das Kommando ausgeführt wird.
+```bash
+aktuelles_datum=$(date)
+aktuelles_datum=`date`     # veraltete Syntax
+```
+### Rechnen mir Variablen / Arithmetic Operations
+
+Wir können auch einfache Rechenoperationen in der BASH durchführen:
+```bash
+zahl1=3
+zahl2=4
+summe=$(( zahl1 + zahl2 ))
+summe=$((zahl1+zahl2))
+let summe = $zahl1 + $zahl2 
+```
 
 
 
@@ -322,4 +434,4 @@ Zum Maskieren gibt es drei verschiedene Wege:
 
 
 
-
+`
