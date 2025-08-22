@@ -297,7 +297,7 @@ Zum Maskieren gibt es drei verschiedene Wege:
 3. Maskieren mit doppelten Hochkommata `"`: Doppelte Hochkommata maskieren **fast** alle in ihnen eingeschlossene Zeichen, nicht aber
 
 - `$` (Dollar) - Variablensubstitution funktioniert weiterhin
-- ``` (Backticks) - Kommandosubstitution funktioniert weiterhin
+- `\`` (Backticks) - Kommandosubstitution funktioniert weiterhin
 - `\` (Backslash) - behält seine Escape-Funktion
 - `!` (Ausrufezeichen) - History Expansion in bash (je nach Einstellung)
 
