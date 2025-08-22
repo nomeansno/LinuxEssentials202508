@@ -434,4 +434,3 @@ let summe = $zahl1 + $zahl2
 
 
 
-`
