@@ -413,22 +413,183 @@ summe=$(( zahl1 + zahl2 ))
 summe=$((zahl1+zahl2))
 let summe = $zahl1 + $zahl2 
 ```
+# Textströme und Standardkanäle
+
+Es gibt drei Standardkanäle unter Linux:
+
+| Kanalbezeichnung | Filedescriptor | Nummer |
+| ---------------- | -------------- | ------ |
+| *Standareingabekanal*  | `stdin` | 0 |
+| *Standardausgabekanal*|  `stdout` | 1 |
+| *Standardfehlerkanal*  | `stderr` | 2 |
+
+Jeder Prozess der gestartet wird, wird mit diesen drei Standardkanälen verbunden. Über diese Kanäle erhält der Prozess Daten und gibt sie auch wieder aus. So können Ein- und Ausgaben unabhängig voneinander verarbeitet und auch umgeleitet werden.
+
+Die Kanäle jedes Prozesses, der in einer Shell gestartet wird, sind automatisch mit der Shell verbunden.
+
+Durch dieses Konzept können wir durch die Kombination simpler Kommandos komplexe Aufaben lösen (-> *Kommandopipelines*) 
+
+Wir könne so z.B. auch Ausgaben von Kommandos in Dateien umleiten (-> *Redirects*).
+
+### Redirects
+
+Mit Redirects kann die der Standardausgabekanal oder der Standardfehlerkanal in eine **Datei** umgeleitet werden. Es gibt zwei Arten von Redirects:
+
+- `>` - einfacher Redirect: Erstellt eine Datei falls nicht vorhanden, **leert** eine bereits vorhandene Datei
+- `>>` - doppelter Redirect: Erstellt eine Datei falls nicht vorhanden, **hängt Ausgabe an**
+
+#### Umleitung des Standareingabekanals
+```bash
+echo huhu 1> hallo.txt   # die 1 gibt hier die Kanalnummer an
+echo huhu 1>> hallo.txt  # die 1 gibt hier die Kanalnummer an
+echo huhu > hallo.txt    # kann bei stdout auch weggelassen werden
+```
+```bash
+ls -l /etc > ls-ausgabe.txt
+ls -l /etc >> ls-ausgabe.txt
+```
+#### Umleitung des Standardfehlerkanals
+```bash
+ls mich-gibts-nicht  2> ls-fehler.txt     # hier muss die 2 stehen, da wir stderr umleiten
+ls mich-gibts-nicht  2>> ls-fehler.txt    # hier muss die 2 stehen, da wir stderr umleiten
+```
+#### Umleitung beider Kanäle
+##### in separate Dateien
+```bash
+ls mich-gibts/ mich-gibts-nicht/ > ergebnis.txt 2>fehler.txt
+```
+##### in die gleiche Datei
+```bash
+ls mich-gibts/ mich-gibts-nicht/ > ausgabe-und-fehler.txt 2>&1
+```
+>[!NOTE]
+> Das `&` gibt hier an, dass wir einen *Kanal*/*Filedescriptor* meinen, ansonsten würden die Fehler in eine Datei mit dem Namen `1` umgeleitet werden.
+
+```bash
+ls mich-gibts/ mich-gibts-nicht/ &> ausgabe-und-fehler.txt
+```
+>[!NOTE]
+> Verkürzte Schreibweise
+
+### /dev/null
+
+`/dev/null` ist soetwas wie das *Schwarze Loch* eines Linux Systems. Alles was wir dorthin leiten, verschwindet. Wir nutzen einen Redirect nach `/dev/null` ganz bewusst, um z.B. Fehlermeldungen eines Kommandos zu unterdrücken. Oder auch in Skripten, um den normalen Output eines Kommandos zu unterdrücken.
+
+... TODO
+## UNIX Philosophie
+Die Unix-Philosophie ist ein Satz von Prinzipien für Software-Design, die ursprünglich in den 1970er Jahren mit dem Unix-Betriebssystem entwickelt wurden. Sie betont Einfachheit, Modularität und Wiederverwendbarkeit.
+
+Douglas McIlroy, der Erfinder der Unixpipes, fasste die Philosophie folgendermaßen zusammen:
+
+- Schreibe Computerprogramme so, dass sie nur eine Aufgabe erledigen und diese gut machen.
+- Schreibe Programme so, dass sie zusammenarbeiten.
+- Schreibe Programme so, dass sie Textströme verarbeiten, denn das ist eine universelle Schnittstelle.
+
+> "Write programs that do one thing and do it well."
+
+## KISS Prinzip
+
+- "Keep it stupid simple"
+- "Keep it super simple"
+- "Keep it simple, stupid!"
+
+## Kommandopipelines
+Kommandopipelines sind ein mächtiges Werkzeug, mit dem sich erst die ganze Stärke der Kommandozeile nutzen lässt.
+
+Syntax:
+```bash
+<kommando1> | <kommando2>
+```
+Mit der *Pipe* (`|`) wird `stdout` von `<kommando1>` mit `stdin` von `<kommando2>` verbunden, so dass `<kommando2>` die Ausgabe von `<kommando1>` entgegenehmen und weiterverarbeiten kann.
+
+Wir können durchaus mehrere Kommandos mit Pipes verbinden, sog. *Pipelines*. Die Anzahl ist einzig durch Hardware-Resourcen beschränkt.
+
+```bash
+<kommando1> | <kommando2> | <kommando3> | <kommando4> | <kommando5> ...
+```
+### Beispiele:
+**Konzept der UNIX Philosophie und Nutzung der Pipe**
+
+`ls` kann super gut den Inhalt von Verzeichnissen anzeigen, bei grösseren Verzeichnissen müssen wir aber (falls überhaupt möglich) die Maus nutzen, um den Anfang der Ausgabe sehen zu können. 
+
+Wir leiten die Ausgabe also an den *Pager* `less` weiter, der super gut darin ist, Textströme seitenweise anzuzeigen, darin zu scrollen, zu suchen usw.
+```bash
+ls -l /etc/ | less       # der Output von ls -l wird an den Pager less geleitet
+```
+**Nur die Usernamen der realen Benutzer anzeigen lassen**
+
+Wir filtern die Datei `/etc/passwd` zuerst nach den Zeilen mit den Usern, die eine Shell (`/bin/bash`, `/bin/sh`, `/bin/zsh` o.ä.) zugewiesen haben. Anschliessend nutzen wir `cut`, um uns nur das erste Feld mit den Usernamen ausgeben zu lassen.
+
+Das Dollarzeichen `$` ist Teil eines *regulären Ausdrucks* und steht für das Ende einer Zeile (mehr dazu z.B. in der Manpage von `grep` oder unter `man regex`).
+```bash
+grep "sh$" /etc/passwd | cut -d: -f1
+```
+**Anzahl der realen User ausgeben lassen**
+```bash
+grep "sh$" /etc/passwd | cut -d: -f1 | wc -l
+```
+> [!NOTE]
+> Pipelines bauen wir am besten Stück für Stück auf, wie in einem Baukastensystem. Wir untersuchen die Ausgabe eines Kommandos, nutzen die History um das Kommando erneut aufzurufen, hängen eine Pipe dran, lassen uns das Ergebnis anzeigen, nutzen die History usw.
+
+### grep
+
+Mit `grep` können wir Textströme zeilenweise filtern. 
+
+`grep` nimmt ein `PATTERN`, also einen Suchbegriff bzw. genauer gesagt einen *Regulären Ausdruck* entgegen und gibt nur die Zeilen eines Textstroms aus, in denen dieses `PATTERN` vorkommt.
+
+#### Beispiele:
+##### nur die Benutzerkonfiguration von root ausgeben
+```bash
+grep "root" /etc/passwd     
+```
+
+> [!TODO]
+> weitere Optionen von `grep`
 
 
+### cut
 
+Mit `cut` können wir Textströme **spaltenweise** filtern. 
 
+Für `cut` können wir ein Trennzeichen / *Delimiter* definieren, anhand dessen `cut` einen Textstrom in Spalten / *Fields* unterteilt und nur das oder die gewünschten Felder ausgibt.
 
+#### Beispiele
+```bash
+cut -d: -f1 /etc/passwd     # nur die Login-Namen der Benutzer ausgeben
+cut -d: -f7 /etc/passwd     # nur die Shells der Benutzer ausgeben
 
+cat /etc/passwd | cut -d: -f1 # geht auch, sog. Useless Use of Cat
+```
+### tail
 
+`tail` gibt standardmässig die letzten 10 Zeilen einer Datei aus. 
 
+Die Anzahl der Zeilen kann über die Option `-n` angegeben werden.
 
+Eine sehr nützliche Option von `tail` ist die Option `-f` / `--follow`. Damit können wir Änderungen an einer Datei sozusagen *live* beobachten. Wird oft in Verbindung mit Log-Dateien genutzt, um zu verfolgen, was gerade passiert. 
 
+#### Beispiele
+```bash
+tail -n 5 ~/.bashrc     # die letzten 5 Zeilen der bashrc ausgeben
+tail -f /var/log/apache2/access.log   # Zugriffe auf den Webserver verfolgen
+```
+### head
 
+`head` gibt standardmässig die ersten 10 Zeilen einer Datei aus. 
 
+Die Anzahl der Zeilen kann über die Option `-n` angegeben werden.
 
+#### Beispiele
+```bash
+head -n 5 ~/.bashrc     # die ersten 5 Zeilen der bashrc ausgeben
+```
+### sort
 
+Mit `sort` können wir Textströme (nach bestimmten Kriterien) sortiert ausgeben.
 
+### uniq
 
+> [!TODO]
 
 
 
