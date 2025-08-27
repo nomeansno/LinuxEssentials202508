@@ -475,7 +475,15 @@ ls mich-gibts/ mich-gibts-nicht/ &> ausgabe-und-fehler.txt
 
 `/dev/null` ist soetwas wie das *Schwarze Loch* eines Linux Systems. Alles was wir dorthin leiten, verschwindet. Wir nutzen einen Redirect nach `/dev/null` ganz bewusst, um z.B. Fehlermeldungen eines Kommandos zu unterdrücken. Oder auch in Skripten, um den normalen Output eines Kommandos zu unterdrücken.
 
-... TODO
+#### Beispiel find und 2>/dev/null
+Wir wollen als regulärer Benutzer mit `find` unser gesamtes Dateisystem nach `.pdf` Dateien durchsuchen. Mit folgendem Kommando erhalten wir aber sehr viele `Permission Denied` Fehlermeldungen:
+```bash
+find / -name "*.pdf"
+```
+Wir leiten also ganz bewusst alle Fehler bzw. `stderr` nach `/dev/null` um die Ergebnisse (auf `stdout`) klarer sehen zu können:
+```bash
+find / -name "*.pdf" 2>/dev/null
+```
 ## UNIX Philosophie
 Die Unix-Philosophie ist ein Satz von Prinzipien für Software-Design, die ursprünglich in den 1970er Jahren mit dem Unix-Betriebssystem entwickelt wurden. Sie betont Einfachheit, Modularität und Wiederverwendbarkeit.
 
@@ -589,8 +597,37 @@ Mit `sort` können wir Textströme (nach bestimmten Kriterien) sortiert ausgeben
 
 ### uniq
 
-> [!TODO]
+Mit `uniq` könne wir direkt aufeinanderfolgende gleiche Zeilen zu einer einzigen zusammenfassen.
 
+Um z.B. alle Dublikate/gleiche Zeilen aus einem Textstrom zu entfernen, kombinieren wir (KISS Prinzip) `uniq` und `sort`
+
+#### Beispiele
+Anzahl der verschiedenen Shells in /etc/passwd zählen
+```bash
+cut -d: -f7 /etc/passwd | sort | uniq | wc -l 
+```
+>[!NOTE] 
+> `sort` hat übrigens die Option `-u` eingebaut, mit der wir gleiches erreichen können.
+
+```bash
+cut -d: -f7 /etc/passwd | sort -u | wc -l 
+```
+## Dateien finden
+
+### locate
+Durchsucht das Dateisystem nach einem *Pattern* bzw. Suchbegriff.
+
+`locate` ist sehr schnell, denn es durchsucht eine Datenbank (also eine Art Index/Glossar), die Suche ist so deutlich schneller möglich, als wenn jede Datei einzeln angeschaut werden müsste.
+
+Die Datenbank wird vom System über einen sog. `cronjob` automatisch periodisch erneuert.
+
+Manuell können wir die Datenbank mit dem Kommando `updatedb` aktualisieren. Dafür sind `root` Rechte nötig.
+
+`locate` hat einige Optionen, die wichtigste davon ist vielleicht `-i` (*ignore-case*), 
+
+### find
+
+evtl. vervollständigen
 
 
 
