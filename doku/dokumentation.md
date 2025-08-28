@@ -651,15 +651,53 @@ Manuell können wir die Datenbank mit dem Kommando `updatedb` aktualisieren. Daf
 
 `locate` hat einige Optionen, die wichtigste davon ist vielleicht `-i` (*ignore-case*), 
 
-### find
-
-evtl. vervollständigen
 
 ## Distributionen
 
-## Support Zeitraum (LTS)
+### Was ist eine Linux-Distribution?
+Eine **Linux-Distribution** ist im Prinzip ein komplettes Betriebssystem, das einen Linux-Kernel und zusätzlich Softwarepakete, Paketverwaltung, Systemdienste und oft eine Desktop-Umgebung beinhaltet.
 
-## Release Modell
+Eine Distribution kombiniert also:
+
+- **Linux-Kernel**: Herzstück des Systems, das die Hardware initiert und steuert und grundlegende Systemfunktionen bereitstellt.
+- **GNU-Basiswerkzeuge**: Standardprogramme für Dateiverwaltung, Shell, Systemdienste...
+- **Paketverwaltungssystem**: Installieren, Aktualisieren und Entfernen von Software (z. B. `apt`, `dnf`, `pacman`).
+- **Systemdienste**: Netzwerk, Benutzerverwaltung, Logging usw.
+- **Anwendungssoftware**: Browser, Office, Multimedia usw.
+- Optional **Desktop-Umgebung**: z. B. GNOME, KDE, XFCE.
+
+Die verschiedenen Distributionen haben jeweils eigene Paketquellen (*Repositories*) und evtl. auch Tools zur Systemverwaltung.
+
+Sie unterscheiden sich in Zielgruppe, Philosophie, Stabilität, Update-Zyklus, Standardsoftware...
+
+### Beispiele für Distributionen
+
+- **Debian** → stabil, Fokus auf FLOSS (*Free Libre Open Source Software*), oft als Server Betriebssytem eingesetzt
+- **Ubuntu** (basiert auf Debian unstable / sid ) →  benutzerfreundlich, Desktop und Server
+- **Red Hat Enterprise Linux (RHEL)** →  kommerziell, Unternehmensumgebungen (Server und Desktop), Firmen zahlen für Support
+- **Fedora** →  von Red Hat, kostenlos, aktuellste Software, Entwicklerorientiert, eher Desktop
+- **Arch Linux** →  folgt dem KISS Prinzip, nach Insatllation absolut minimalistisch, Rolling Release, eher für erfahrenere User, Desktop
+- **openSUSE** →  Desktop und Server, YaST als Admin-Tool (grafisches Tool, mit dem sämtliche administrativen Aufgaben erfüllt werden können
+
+## Release-Modelle
+
+- **Fixed Release**:  Stabile Versionen in festen Intervallen. Nur mit einer neuen Version der Distribution kommt auch neue Version von Software. Weniger aktuell, dafür stabiler. (Debian, Ubuntu, RHEL, openSUSE Leap)
+- **Rolling Release**: Kontinuierliche Updates, keine festen Versionen, aktuelle Software kommt direkt in die Repos. Sehr aktuell (*Bleeding Edge*), dafür tendentiell weniger stabil. (Arch Linux, openSUSE Tumbleweed)
+- **Hybrid**:  Kombination aus stabilen Releases und optionalen Rolling-Komponenten. (Fedora (teils), Manjaro (basiert auf Arch Linux))
+
+Release basierte Distributionen haben oft auch noch zusätzlich verschiedene interne Releases. Beispiel Debian:
+
+- **stable:** die offizielle, stabile Version, Software ist ca. 2 Jahre alt
+- **testing:** enthält Pakete, die in *unstable* waren aber noch nicht in *stable* akzeptiert wurden, wird zur nächsten *stable* Version, Software ist bis zu 1 Jahr alt
+- **unstable:** neueste Software, theoretisch instabil, Basis für Ubuntu
+
+## Supportzeitraum und LTS (Long Term Support)
+
+Die einzelnen Versionen der Release basierten Distributionen werden über einen bestimmten Zeitraum hinweg mit Updates versorgt, bis sie ihren EOL (End of Life) erreichen und keine Updates mehr bekommen.
+
+**LTS** steht für Long Term Support (Langzeit-Unterstützung). LTS-Versionen bekommen besonders lange Updates (mindestens 5 Jahre) und sind besonders für Unternehmen, Server und Systeme wichtig, die über Jahre stabil laufen sollen, ohne dass man sich um häufige Upgrades (des gesamten Systems) kümmern muss.
+
+Es gibt sogar Versionen von Ubuntu und RHEL, die über mehr als 10 Jahre lang (Sicherheits-)Updates erhalten (*ELS - Extended Lifecycle Support* bzw. *ESM - Extended Security Maintenance*), dann aber auch (teilweise) kostenpflichtig sind.
 
 ## Archivierung und Komprimierung
 
@@ -725,6 +763,10 @@ tar --append --file archive.tar other_file.txt
 ```
 > [!NOTE] 
 > Pfadangaben werden immer mit archiviert! Wir müssen uns also im Vorhinein Gedanken machen, ob wir z.B. einen relativen oder absoluten Pfad angeben.
+
+### Komprimierung
+
+
 
 
 
