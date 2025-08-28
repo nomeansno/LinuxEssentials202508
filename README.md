@@ -6,9 +6,9 @@
   - [ ] Die wichtigsten Open-Source-Anwendungen
   - [ ] Open-Source-Software und -Lizenzen
   - [ ] IKT-Fähigkeiten und Arbeiten mit Linux
+- [x] Archivierung und Komprimierung
 - [ ] Choosing an Operating System 
 - [ ] Understanding Computer Hardware
-- [ ] Archivierung und Komprimierung
 - [ ] FHS / Verzeichnisstruktur
 - [ ] Prozesse
 - [ ] User und Gruppen
