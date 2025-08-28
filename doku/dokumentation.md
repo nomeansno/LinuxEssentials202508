@@ -550,11 +550,37 @@ Mit `grep` können wir Textströme zeilenweise filtern.
 ```bash
 grep "root" /etc/passwd     
 ```
+##### -c --count 
+`grep` zählt die Ergebnisse, hier also die Anzahl der Benutzer, die BASH als Login-Shell nutzen, es wird nur die Anzahl ausgegeben, nicht die Zeilen, die PATTERN enthalten
+```bash
+grep -c bash /etc/passwd    
+```
+##### -v --invert 
+`grep` gibt all das aus, was *nicht* auf das PATTERN passt.
 
-> [!TODO]
-> weitere Optionen von `grep`
+hier: Ausgabe aller Benutzerkonfigurationen, die *nicht* die BASH nutzen
+```bash
+grep -v bash /etc/passwd
+```
+##### -i --ignore-case 
+`grep` ignoriert Gross-und Kleinschreibung
 
+hier: sowohl alias als auch Alias wird gefunden
+```bash
+grep -i alias ~/.bashrc
+```
+##### -n --line-number 
+`grep` zeigt zusätzlich die Zeilennummer an, in der PATTERN gefunden wurde. Sehr praktisch.
+```bash
+grep -n alias ~/.bashrc
+```
+##### -r --recursive 
+`grep` kann so auch ganze Verzeichnisse durchsuchen
 
+hier: gesamtes Home-Verzeichnis von tux nach etwas zu aliasen durchsuchen
+```bash
+grep -r alias /home/tux 
+```
 ### cut
 
 Mit `cut` können wir Textströme **spaltenweise** filtern. 
@@ -628,6 +654,89 @@ Manuell können wir die Datenbank mit dem Kommando `updatedb` aktualisieren. Daf
 ### find
 
 evtl. vervollständigen
+
+## Distributionen
+
+## Support Zeitraum (LTS)
+
+## Release Modell
+
+## Archivierung und Komprimierung
+
+### Archivierung mit `tar`
+
+*Archivierung* bezeichnet das Zusammenfassen **mehrerer** Dateien und Verzeichnisse in eine **einzige** Datei, ohne zwingende Kompression. Dadurch bleibt die ursprüngliche Struktur der Dateien erhalten, so können mehrere Dateien einfacher gespeichert oder übertragen werden.
+
+Unter Linux wird das Kommando `tar` (*Tape Archiver*) zur Archivierung verwendet. `tar` ist ein sehr altes Programm und die Syntax (freundlich ausgedrückt) etwas gewöhnungsbedürftig. Kurzoptionen haben oft keine direkte Entsprechung zu den Langoptionen.
+
+Ein `tar`-Archiv kann man sich mit dem Kommando `cat` anzeigen lassen:
+
+![Ausgabe tar Archiv mit cat](./images/ausgabe-tar-archiv-mit-cat.png)
+
+> [!NOTE]
+> Alle numerischen Angaben hier sind im *Oktalformat*. Dies hat historische Gründe. Möchte man den Zeitstempel umrechnen, kann man sich von der BASH helfen lassen:
+> ```bash
+> echo $(( 8#14757403716 ))
+> ```
+
+Einige wichtige Optioenen zu `tar`:
+
+>[!NOTE]
+> Bei `tar` ist die Option `-f` sehr wichtig. Damit müssen wir immer den Namen des Archivs angeben, mit dem wir arbeiten wollen. Die Option `-f` erwartet zwingend ein Argument (den Namen/Pfad zu einem Archiv. Der Name muss **direkt** hinter der Option folgen.
+
+**Beispiele:**
+```bash
+tar -cvf archive.tar file1 file2    # korrekt, funktioniert
+tar -tf archive.tar                 # korrekt, funktioniert
+
+tar -cfv archive.tar file1 file2    # funktioniert NICHT
+tar -ft archive.tar                 # funktioniert NICHT
+```
+
+#### Archiv aus Dateien erstellen
+```bash
+tar -cf archive.tar file1.txt file2.txt file3.txt 
+tar --create --file archive.tar file1.txt file2.txt file3.txt 
+```
+#### Archiv aus einem Verzeichnis erstellen
+```bash
+tar -cf archive.tar /absolute/path/to/dir
+tar -cf archive.tar relativ/path/to/dir
+```
+#### Dateien aus Archiv extrahieren
+```bash
+tar -xf archive.tar
+tar --extract --file archive.tar
+```
+#### Die Option -v / --verbose gibt eine Rückmeldung darüber, was tar macht
+```bash
+tar -xvf archive.tar
+tar --extract --verbose --file archive.tar
+```
+#### Inhalt eines Archivs anzeigen/auflisten
+```bash
+tar -tf archiv.tar
+tar --list --file archive.tar
+```
+#### Datei einem bestehenden Archiv hinzufügen
+```bash
+tar -rf archive.tar other_file.txt
+tar --append --file archive.tar other_file.txt
+```
+> [!NOTE] 
+> Pfadangaben werden immer mit archiviert! Wir müssen uns also im Vorhinein Gedanken machen, ob wir z.B. einen relativen oder absoluten Pfad angeben.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
