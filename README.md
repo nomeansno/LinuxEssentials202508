@@ -7,13 +7,15 @@
   - [ ] Open-Source-Software und -Lizenzen
   - [ ] IKT-Fähigkeiten und Arbeiten mit Linux
 - [x] Archivierung und Komprimierung
+- [x] Prozesse
+- [ ] FHS / Verzeichnisstruktur
 - [ ] Choosing an Operating System 
 - [ ] Understanding Computer Hardware
-- [ ] FHS / Verzeichnisstruktur
-- [ ] Prozesse
 - [ ] User und Gruppen
 - [ ] Dateiberechtigungen
 - [ ] Basic Regular Expressions
 - [ ] Netzwerk
 - [ ] Logging
 - [ ] Scripting
+
+https://wiki.lpi.org/wiki/LinuxEssentials_Objectives_V1.6(DE)
