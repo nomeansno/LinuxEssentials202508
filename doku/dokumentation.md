@@ -528,7 +528,7 @@ ls -l /etc/ | less       # der Output von ls -l wird an den Pager less geleitet
 
 Wir filtern die Datei `/etc/passwd` zuerst nach den Zeilen mit den Usern, die eine Shell (`/bin/bash`, `/bin/sh`, `/bin/zsh` o.ä.) zugewiesen haben. Anschliessend nutzen wir `cut`, um uns nur das erste Feld mit den Usernamen ausgeben zu lassen.
 
-Das Dollarzeichen `$` ist Teil eines *regulären Ausdrucks* und steht für das Ende einer Zeile (mehr dazu z.B. in der Manpage von `grep` oder unter `man regex`).
+Das Dollarzeichen `$` ist eil eines *regulären Ausdrucks* und steht für das Ende einer Zeile (mehr dazu z.B. in der Manpage von `grep` oder unter `man regex`).
 ```bash
 grep "sh$" /etc/passwd | cut -d: -f1
 ```
@@ -848,9 +848,54 @@ tar -xf archiv.tar.xz
 - `j` = bzip2  wendet bzip2-Kompression an
 - `J` = xz  wendet xz-Kompression an
 
+## Prozesse
 
+Ein Prozess ist ein sich in der Auführung befindliches Programm. Ein Programm resultiert immer in mindestens einem Prozess. Prozesse laufen jeweils in einem von anderen unabhängigen "Resourcenraum", haben eine eigene PID, kennen nur die PID des Prozesses, von dem sie gestartet wurden (Elternprozess). Prozesse können mit dem Kommando kill über Signale beeinflusst werden.
 
+Wird der Elternprozess beendet, so werden (in der Regel) gleichzeitig alle Kindprozesse mit beendet.
 
+Auf der Shell kann immer nur ein einzelner Prozess im Vordergrund ausgeführt werden. Prozesse können mit der Tastenkomnination STRG+Z angehalten und in den Hintergrund geschickt werden. Mit dem Kommando bg kann dieser Prozess dann im Hintergund fortgesetzt werden, fg holt den Prozess in den Vordergrund zurück.
+
+Wir können einen Prozess beim Start aber auch direkt in den Hintergrund schicken und starten (duch Anhängen eines &):
+
+```bash
+ kommando &
+```
+### Laufende Prozesse anzeigen lassen
+- `ps` : Anzeige aller in der aktuellen Shell laufenden Prozesse
+ - `ps -aux`: Anzeige aller laufende Prozessez auf dem System
+ - `ps -ef`: auch Anzeige aller laufenden Prozesse auf dem System
+ - `ps --forest`: Prozesshirarchie (Baumstruktur) anzeigen
+ - `jobs`: Anzeigen der Hintergrundprozesse
+ - `fg`: letzten/aktuellen/default Job in den Vordergrund holen
+ - `fg %<jobnummer>`: Job mit Jobnummer `<jobnummer>` in den Vordergrund holen
+ - `bg`: Hintergrundprozess fortsetzen
+ - `bg %<jobnummer>`: Hintergrundprozess mit Jobnummer `<jobnummer>` in fortsetzen
+
+### kill
+
+ `kill` sendet Signale an Prozesse. Es muss die PID des Prozesses angegeben werden, Prozessname funktioniert nicht.
+
+ - `kill -s <signal> <PID>`: sendet <signal> an den Prozess mit der PID <PID>
+ - `kill -<signal> <PID>`: sendet <signal> an Prozess mit der PID <PID>
+
+ Die PID eines Prozesses kann auf mehrere Arten ermittelt werden:
+```
+ps -ef | grep <prozessname>
+pgrep <prozessname>
+...
+```
+### einige wichtige Signale
+
+- `SIGTERM` (15): Standard, falls kein bestimmtes Signal angegeben wird. Sendet eine "freundliche" Aufforderung an den Prozess, sich doch bitte zu beenden. Im Prozess selbst ist festgelegt, wie er sich beendet, z.B. werden noch gewisse Aufräumarbeiten durchgeführt etc.
+- `SIGINT` (2): sendet eine etwas deutlichere Aufforderung an den Prozess, sich zu beenden, wird bei der Tastenkomnination `STRG+C` (_Cancel_) gesendet
+- `SIGKILL` (9): rabiateste Methode, Signal wird nicht an den Prozess, sondern direkt an den Scheduler gesendet, der daraufhin den entsprechenden Prozess aus seiner Liste löscht, der Prozess somit keine CPU Zeit mehr zur Verfügung gestellt bekommt und somit zwangsläufig beendet wird.
+- `SIGSTOP` (19): hält Prozess an und schickt ihn in den Hintergrund (`STRG+Z`)
+- `SIGCONT` (18): startet angehaltene Prozesse
+
+### pkill und killall
+
+- `pkill`: analog zu oben, `pkill` erwartet aber den Namen bzw. einen Teil des Namens eines Prozesses anstatt der PID. Falls mehere Prozesse auf den Namen passen, wird das Signal an **alle** diese Prozesse gesendet.
 
 
 
