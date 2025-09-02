@@ -897,10 +897,86 @@ pgrep <prozessname>
 
 - `pkill`: analog zu oben, `pkill` erwartet aber den Namen bzw. einen Teil des Namens eines Prozesses anstatt der PID. Falls mehere Prozesse auf den Namen passen, wird das Signal an **alle** diese Prozesse gesendet.
 
+## Benutzer und Gruppen
 
+### Benutzer anlegen mit `useradd`
 
+Mit `useradd` (auf allen Linux Systemen verfügbar) können wir Benutzer anlegen. 
 
+Obwohl ein Eintrag für ein Home-Verzeichnis in der `/etc/passwd` erzeugt wird, wird dies **nicht** angelegt
+```bash
+useradd <user>
+```
+Die Option `-m` bewirkt, dass unterhalb von `/home` ein Verzeichnis mit dem Namen des Benutzers erzeugt und alle Dateien aus `/etc/skel` dorthin kopiert werden.
+```bash
+useradd -m <user>
+useradd --create-home <user>
+```
+Benutzer eine Login-Shell zuweisen
+```bash
+useradd -s /bin/bash <user>
+useradd --shell /bin/bash <user>
+```
+Kommentarfeld für den vollen Namen des Benutzers und weitere Informationen
+```bash
+useradd -c "Voller Name des Benutzers" <user>
+useradd --comment "Voller Name des Benutzers" <user>
+```
+Neuen User eine bestimmte Primäre Gruppe zuordnen:
+```bash
+useradd -g <primary-group> <user>
+```
+Neuen User einer Liste von zusätzlichen Gruppen zuordnen:
+```bash
+useradd -G <supplementary-group-1>,<supplementary-group-2> <user>
+```
+Standarbeispiel zum Anlegen eines Benutzers:
+```bash
+useradd -m -c "Tux Tuxedo" -s /bin/bash tux
+```
+### Passwörter
+Passwörter werden nicht in der `/etc/passwd` gespeichert, sondern in der Datei `/etc/shadow`. Dafür gibt es mindestens zwei Gründe:
 
+1. Die Datei `/etc/passwd` muss von allen Usern auf dem System lesbar sein, wir wollen aber vermeiden, dass die Passwort-Hashes auslesbar sind
+2. In der Datei `/etc/passwd` werden Informationen über die User gespeichert, in der `/etc/shadow` Informationen über Passwörter (*Separation of Concern*)
+
+Passwörter liegen sind immer gehasht und zusätzlich gesaltet, d.h. dass vor dem Hashen des Passworts eine bestimmte zufällig generierte Zeichenkette vor das Passwort geschrieben und dann der kommplette String (Salt + Passwort) gehasht wird.
+
+So wird zum einen vermieden, dass zwei gleiche Klartextpasswörter den gleichen Hash erhalten, zum anderen werden Attacken über *Rainbow Tables* (riesige Tabellen mit Hash-Werten und den dazugehörigen Klartextpasswörtern) vermieden.
+
+Das Kommando `useradd` kann selbst keine Passwörter generieren! Wir rufen dazu nach dem Erstellen eines neuen Users das Kommando `passwd` auf.
+
+>[!NOTE] Wir können dem Benutzer auch bereits beim Erzeugen ein Passwort mitgeben. 
+
+**Wichtig:** Hier muss ein für das System passender *gesaltener* HASH angegeben werden. Der Eintrag wird exakt so in die `/etc/shadow` eingetragen.
+```bash
+useradd -p "PASSWORDHASH" <user>
+useradd --password "PASSWORDHASH" <user>
+```
+Schwer ist das nicht wirklich - wir können dazu das Kommando `openssl` verweden:
+```bash
+openssl passwd -6 PASSWORT
+```
+Die Option `-6` weist `openssl` an, den für Linux empfohlenen sicheren *SHA-512* Algorithmus zu verwenden.
+
+In einem Rutsch sähe das folgendermassen aus:
+```bash
+useradd -m -c "User mit Passwort" -p $(openssl passwd -6 'My!Secret#Password' -s /bin/bash userwithpass
+```
+### passwd
+Das Kommando ermöglicht die Änderung von Passwörtern. Mit Root-Rechten können so die Passwörter aller Benutzer geändert werden:
+```bash
+passwd <user>
+```
+Als regulärer Benutzer kann man damit sein eigenes Paswsort ändern:
+```bash
+passwd
+```
+### chsh
+Mit `chsh` kann ein Benutzer seine Login Shell ändern bzw. kann `root` die Login Shells jedes Users ändern.
+```bash
+chsh -s /bin/bash
+```
 
 
 
