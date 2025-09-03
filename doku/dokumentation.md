@@ -699,6 +699,27 @@ Die einzelnen Versionen der Release basierten Distributionen werden über einen 
 
 Es gibt sogar Versionen von Ubuntu und RHEL, die über mehr als 10 Jahre lang (Sicherheits-)Updates erhalten (*ELS - Extended Lifecycle Support* bzw. *ESM - Extended Security Maintenance*), dann aber auch (teilweise) kostenpflichtig sind.
 
+## Dateisystembaum / Verzeichnisstruktur
+
+| Verzeichnis | Bedeutung | enthält |
+| ----------- |:-------------: | --------- |
+| `/bin` | *binary* |  ausführbare Dateien, die von allen Benutzern ausgeführt werden können. Normalerweise ein *Symlink* auf `/usr/bin`. |
+| `/sbin` | *superuser binary* |  auch ausführbare Dateien, die allerdings nur von `root` genutzt werden können. Auch ein Symlink auf `/usr/sbin`. |
+| `/boot` | |  den/die Linux Kernel (`vmlinuz-6.1.0-25.amd64`), die zugehörige Initiale RAM Disk (`initrd.img-6.1.0-25-amd64`), weitere für den Bootvorgang wichtige Dateien und die Konfiguration des Bootloaders, z.B. `grub`. |
+| `/dev` | *devices* |  *Gerätedateien*, z.B. für die vorhanden Speichermedien und Partitionen, `/dev/null`, `/dev/random`, die Filedescriptoren `stdin`, `stdout`, `stderr`, Terminals etc. Dieses Verzeichnis wird automatisch vom Dienst `udev` (*Userspace Dev*) überwacht und gepflegt. |
+| `/etc` | *et cetera* / *etsy* |  systemweite Konfigurationsdateien. Diese können für gewisse Programme durch die benutzerspezifischen Konfigurationsdateien (im Heimatverzeichnis der Benutzer) überschrieben werden (`/etc/bash.bashrc` -> `~/.bashrc`). |
+| `/home` | | Heimatverzeichnisse der regulären Benutzer |
+| `/media` `/mnt` | *mount* |  Verzeichnisse für die *Mountpoints* weiterer/externer Datenträger |
+| `/opt` | *optional* | hier können Pakete ihre Dateien ablegen, die nicht über die Standardpaketquellen installiert wurden |
+| `/proc` | *processes* |  Dateien/Informationen über das laufende System: laufende Prozesse, Hardware, Kernelkonfiguration. Existiert nur im RAM, ist ein sog. *virtuelles* oder *Pseudodateisystem* |
+| `/root` | | Heimatverzeichnis des *Superusers* `root` |
+| `/sys` | *system* | ähnlich wie `/proc` bzw. eine nachträgliche Erweiterung,  vor allem Dateien/Informationen zur Hardware, auch ein *virtuelles-* bzw. *Pseudodateisystem*. |
+| `/tmp` | *temp* |  temporäre Dateien |
+| `/usr` | *Unix System Resources* |  Verzeichnisse für die ausführbaren Dateien, Libraries, Source Code, Dokumentationen etc. |
+| `/var` | *variable* |  viele wichtige Dateien wie z.B. *Logdateien* (`/var/log`), E-Mails (`/var/mail`), Cache (`/var/cache`) ... |
+
+
+
 ## Archivierung und Komprimierung
 
 ### Archivierung mit `tar`
@@ -897,6 +918,30 @@ pgrep <prozessname>
 
 - `pkill`: analog zu oben, `pkill` erwartet aber den Namen bzw. einen Teil des Namens eines Prozesses anstatt der PID. Falls mehere Prozesse auf den Namen passen, wird das Signal an **alle** diese Prozesse gesendet.
 
+## Benutzerkonten
+
+### Root Acount
+
+Der Benutzer `root` ist der *SuperUser* eines Linux Systems. Er ist der einzige Benutzer, welcher volle Rechte auf das System hat, also alles darf. Er muss auf jedem System existieren, damit dieses lauffähig ist, beispielsweise um während des Bootvorgangs einzelne Dienste zu starten usw.
+
+### Reguläre Benutzer
+
+Alle *regulären* Benutzer haben **eingeschränkte** Rechte. Sie dürfen z.B. nicht alle Kommandos ausführen oder generell irgendwelche Änderungen am System vornehmen. 
+
+Im Hintergrund wird das mehr oder weniger alles über die Berechtigungen an Dateien geregelt.
+
+Reguläre Benutzer können sich am System anmelden und interaktiv Kommandos ausführen. Dazu haben sie in der `/etc/passwd` eine *Login Shell* zugewiesen.
+
+### Systembenutzer / Servicenutzer / Pseudobenutzer
+
+Es gibt eine weitere Bentuzergruppe mit eingeschränkten Rechten. Das fällt uns auf, wenn wir die Datei `/etc/passwd` inspizieren. Die Mehrzahl der Benutzer haben wir gar nicht selbst angelegt, sie wurden automatisch vom System erzeugt, als bestimmte Dienste/Services installiert wurden.
+
+Genau das ist der Sinn dieser Benutzer: So können bestimmte Dienste bzw. Prozesse mit deren Berechtigungen ausgeführt werden um die Sicherheit des Systems zu erhöhen. Ein kompromittierter Dienst erhält so also nicht direkt Zugriff auf das gesamte System.
+
+Beispiel: `www-data` für Webserver wie *Apache oder Nginx* - selbst wenn ein Angreifer den Webserver übernimmt, kann er nicht auf andere Systemdateien zugreifen.
+
+Pseudobenutzer haben keine Login-Shell, ihnen wird `/usr/sbin/nologin` zugewiesen. Sie können sich also nicht am System anmelden und Kommandos ausführen.
+
 ## Benutzer und Gruppen
 
 ### Benutzer anlegen mit `useradd`
@@ -961,7 +1006,7 @@ Die Option `-6` weist `openssl` an, den für Linux empfohlenen sicheren *SHA-512
 
 In einem Rutsch sähe das folgendermassen aus:
 ```bash
-useradd -m -c "User mit Passwort" -p $(openssl passwd -6 'My!Secret#Password' -s /bin/bash userwithpass
+useradd -m -c "User mit Passwort" -p $(openssl passwd -6 'My!Secret#Password') -s /bin/bash userwithpass
 ```
 ### passwd
 Das Kommando ermöglicht die Änderung von Passwörtern. Mit Root-Rechten können so die Passwörter aller Benutzer geändert werden:
@@ -977,6 +1022,99 @@ Mit `chsh` kann ein Benutzer seine Login Shell ändern bzw. kann `root` die Logi
 ```bash
 chsh -s /bin/bash
 ```
+
+### adduser
+
+`adduser` ist ein Perl-Skript, welches u.a. die Kommandos  `useradd` und `passwd` ausführt. Es ist *interaktiv*, wir brauchen keine Optionen zu übergeben, bestimmte Einstellungen werden abgefragt, vor allem fragt `adduser` direkt nach einem Passwort für den neuen Benutzer. Es sind andere Default-Werte gesetzt als bei `useradd`, z.B. die `bash` als Login-Shell.
+
+Dieses Kommando ist aber standardmässig nur auf Debian-basierten Distributionen vorinstalliert.
+
+#### Relevante Dateien
+Beim Anlegen von Benutzern passiert übrigens nur folgendes:
+
+- Ein Eintrag in der `/etc/passwd` mit den Benutzerinformationen wird erzeugt
+- Das Passwort wird in die `/etc/shadow` eingetragen
+- Die primäre Gruppe wird zur `/etc/group` hinzugefügt (und eventuell andere Gruppenzugehörigkeiten angepasst)
+- In der `/etc/gshadow` wird ein Eintrag ohne Passwort erzeugt (diese Datei bzw. Gruppenpasswörter werden eh nicht genutzt)
+
+Das war's. Nichts weiter. Keine Magie, nichts im Hintergrund. Nur Veränderung von Textdateien. Das ist ein gutes Beispiel dafür, wie die Konfiguration eines Linux System generell funktioniert. 
+
+### Gruppen
+
+Mit Gruppen können mehrere Benutzer zusammengefasst und ihnen gemeinsame Berechtigungen auf Dateien und Verzeichnisse gegeben werden.
+
+Im Unterschied zu Windows können Gruppen nur einzelne Benutzer enthalten, keine weiteren Gruppen.
+
+Für die Anzeige der Gruppenzugehörigkeiten kann man die Kommandos `groups` oder `id` benutzen.
+
+#### Primäre Gruppe
+Jeder Benutzer hat genau eine primäre Gruppe. Diese ist in `/etc/passwd` eingetragen. In der Regel hat sie den gleichen Namen wie der Benutzer. Sie ist nötig, da z.B. beim Erstellen von Dateien diese einem Benutzer und einer Gruppe zugewiesen werden.
+
+#### Sekundäre Gruppen
+Ein Benutzer kann aber auch mehreren zusätzlichen Gruppen angehören. Die Zugehörigkeiten sind in der `/etc/group` eingetragen.
+
+### Gruppe erstellen:
+Auf allen Linux Systemen existiert das Kommando `groupadd`
+```bash
+groupadd <gruppe>
+```
+### Benutzer einer Gruppe hinzufügen:
+```bash
+usermod -g <primary-group> <user>
+usermod -G <absolute-list-of-supplementary-groups> <user>
+usermod -aG <group1>,<group2>,<group3> <user>
+```
+Vorsicht mit der Option `-G`, diese erwartet eine absolute Liste von Gruppen, die der User angehören soll. Gehört der User einer Gruppe an, die hier nicht genannt ist, wird er aus dieser Gruppen entfernt.
+
+Möchten wir einen User einer Gruppe hinzufügen, die bestehenden Gruppenzugehörigkeiten aber nicht verändern, nutzen wir zusätzlich die Opione `-a`.
+
+Damit Gruppenzugehörigkeiten gültig werden, muss die Datei `/etc/group` neu eingelesen werden. Dies geschieht z.B. wenn der Benutzer muss sich neu anmeldet bzw. eine neue Login-Shell startet. 
+
+Um die Gruppenzugehörigkeit in der aktuellen Shell zu aktualisieren, kann auch das Kommando `newgrp <gruppe>` genutzt werden.
+
+## sudo
+
+Mittels `sudo` (*Superuser do*) können Kommandos als ein anderer Benutzer ausgeführt werden. Standardmässig wird es genutzt, um als normaler Benutzer Root-Rechte zu erlangen, ohne sich als User `root` anmelden zu müssen.
+
+#### Vorteile von `sudo`
+
+- Benutzer gibt sein **eigenes** Passwort ein, nicht das von `root`
+- Passwort von `root` muss nicht geteilt werden (sehr sinnvoll bei mehreren Administratoren)
+- sehr fein granulare Rechtevergabe möglich: z.B. als ein bestimmter Bentuzer nur bestimmte Kommandos ausführen etc.
+- kann auch so konfiuriert werden, dass gar kein Passwort eingegeben werden muss (nur unter ganz bestimmten Bedingungen sinnvoll)
+- das eingegebene Passwort wird für eine gewisse Zeit (15 min) gespeichert und muss nicht immer wieder eingegeben werden und muss nicht immer wieder eingegeben werden
+- alle `sudo` Kommandos werden in `/var/log/autho.log` protokolliert und sind zusätzlich in der History der jeweiligen Benutzer
+- es wird vermieden, dass Benutzer aus Faulheit dauerhaft eine Root-Shell offen haben
+
+
+#### Nachteile von `sudo`
+- `sudo` ist Software und Software ist **nie fehlerfrei**
+- Sicherheitslücken in `sudo` könnten ausgenutzt werden
+- könnte falsch/unsicher konfiuriert werden
+
+#### Konfiguration
+Generell erfolgt die Konfiguration in der Datei `/etc/sudoers`. Diese sollte **nie direkt** sondern **immer** mit dem Kommando `visudo` bearbeitet werden.
+
+Der einfachste Weg, einem User Root-Rechte mittels `sudo` zu gewähren, besteht darin, diesen User der Gruppe `sudo` bzw. `wheel` (je nach Distribution) hinzuzufügen.
+
+Von einem Eintrag des/der User in die `/etc/sudoers` ist abzuraten, es sei denn, `sudo` soll feiner konfiuriert werden
+
+>[!NOTE] 
+> Falls man das vorherige Kommando erneut mit Root-Rechten ausführen will ist das Kommando `sudo !!` sehr nützlich. 
+> 
+> Das erste `!` steht für die History Expansion, das zweite für das vorherige Kommando.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
